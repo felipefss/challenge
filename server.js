@@ -11,9 +11,13 @@ const DB = firstTodos.map((t) => {
 
 server.on('connection', (client) => {
   // Sends a message to the client to reload all todos
-  const reloadTodos = (todos = DB) => {
-    server.emit('load', todos);
-  }
+  const reloadTodos = () => {
+    server.emit('load', DB);
+  };
+
+  const addTodo = (todo) => {
+    server.emit('add', todo);
+  };
 
   // Accepts when a client makes a new todo
   client.on('make', (t) => {
@@ -24,7 +28,7 @@ server.on('connection', (client) => {
     DB.push(newTodo);
 
     // Send the latest todos to the client
-    reloadTodos([newTodo]);
+    addTodo(newTodo);
   });
 
   // Send the DB downstream on connect
