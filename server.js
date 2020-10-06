@@ -31,6 +31,16 @@ server.on('connection', (client) => {
     addTodo(newTodo);
   });
 
+  client.on('delete', title => {
+    for (let i = 0; i < DB.length; i++) {
+      if (DB[i].title === title) {
+        DB.splice(i, 1);
+        break;
+      }
+    }
+    console.log(`Removing item "${title}"`);
+  });
+
   // Send the DB downstream on connect
   reloadTodos();
 });

@@ -9,7 +9,7 @@ function add() {
 
     // Emit the new todo as some data to the server
     server.emit('make', {
-        title : input.value
+        title: input.value
     });
 
     // Clear the input
@@ -17,11 +17,42 @@ function add() {
     input.focus();
 }
 
+function markComplete(ev) {
+    ev.target.labels[0].style.textDecoration = ev.target.checked ? 'line-through' : 'none';
+}
+
+function removeItem(ev) {
+    const current = ev.target.offsetParent;
+    list.removeChild(current);
+
+    server.emit('delete', current.firstChild.textContent);
+}
+
 function render(todo) {
     console.log(todo);
     const listItem = document.createElement('li');
+    listItem.className = 'list-group-item';
+
+    const checkboxLabel = document.createElement('label');
+    checkboxLabel.className = 'form-check-label';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'form-check-input';
+    checkbox.addEventListener('click', markComplete);
+    checkboxLabel.appendChild(checkbox);
+
     const listItemText = document.createTextNode(todo.title);
-    listItem.appendChild(listItemText);
+    checkboxLabel.appendChild(listItemText);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'close';
+    deleteButton.setAttribute('aria-label', 'Close');
+    deleteButton.innerHTML = '<span aria-hidden="true">&times;</span>';
+    deleteButton.addEventListener('click', removeItem);
+
+    listItem.appendChild(checkboxLabel);
+    listItem.appendChild(deleteButton);
     list.append(listItem);
 }
 
